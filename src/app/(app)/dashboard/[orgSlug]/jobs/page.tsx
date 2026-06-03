@@ -17,6 +17,7 @@ export default async function JobsPage({ params }: Props) {
   if (!membership) redirect("/dashboard");
 
   const jobs = await db.jobLog.findMany({
+    where: { organizationId: membership.organizationId },
     orderBy: { createdAt: "desc" },
     take: 50,
   });

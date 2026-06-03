@@ -74,6 +74,7 @@ model Organization {
   memberships   Membership[]
   invitations   Invitation[]
   subscriptions Subscription[]
+  jobLogs       JobLog[]
 }
 
 enum MemberRole {
@@ -129,15 +130,19 @@ model Subscription {
 // ─── Background Jobs audit log ────────────────────────────────────────────────
 
 model JobLog {
-  id          String    @id @default(cuid())
-  jobName     String
-  jobId       String
-  status      String
-  payload     Json?
-  error       String?
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
+  id             String    @id @default(cuid())
+  jobName        String
+  jobId          String
+  organizationId String?
+  status         String
+  payload        Json?
+  error          String?
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
 
   @@index([jobName])
   @@index([status])
+  @@index([organizationId])
 }

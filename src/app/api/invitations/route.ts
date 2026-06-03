@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
   // Enqueue email via background job (non-blocking)
   await enqueueJob(JOB_NAMES.SEND_INVITATION, {
     invitationId: invitation.id,
+    organizationId: membership.organizationId,
     email,
     organizationName: invitation.organization.name,
     inviterName: invitation.invitedBy.name ?? "A teammate",

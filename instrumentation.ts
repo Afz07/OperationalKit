@@ -24,6 +24,7 @@ export async function register() {
 
     interface InvitationJobData {
       invitationId: string;
+      organizationId: string;
       email: string;
       organizationName: string;
       inviterName: string;
@@ -34,7 +35,7 @@ export async function register() {
       JOB_NAMES.SEND_INVITATION,
       async (jobs) => {
         for (const job of jobs) {
-          const { invitationId, email, organizationName, inviterName, inviteUrl } =
+          const { invitationId, organizationId, email, organizationName, inviterName, inviteUrl } =
             job.data;
 
           try {
@@ -48,6 +49,7 @@ export async function register() {
               data: {
                 jobName: JOB_NAMES.SEND_INVITATION,
                 jobId: job.id ?? invitationId,
+                organizationId,
                 status: "completed",
                 payload: job.data as unknown as Record<string, string>,
                 completedAt: new Date(),
@@ -58,6 +60,7 @@ export async function register() {
               data: {
                 jobName: JOB_NAMES.SEND_INVITATION,
                 jobId: job.id ?? invitationId,
+                organizationId,
                 status: "failed",
                 payload: job.data as unknown as Record<string, string>,
                 error: err instanceof Error ? err.message : String(err),
