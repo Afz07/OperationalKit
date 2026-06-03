@@ -29,8 +29,8 @@ Stop spending the first week setting up auth and billing. Clone this, configure 
 
 ```bash
 # 1. Clone
-git clone https://github.com/Afz07/my-first-project
-cd my-first-project
+git clone https://github.com/Afz07/OperationalKit
+cd OperationalKit
 
 # 2. Install
 npm install
