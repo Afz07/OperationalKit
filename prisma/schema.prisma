@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth (NextAuth v5 required models) ───────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts    Account[]
+  sessions    Session[]
+  memberships Membership[]
+  invitations Invitation[] @relation("InvitedBy")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// ─── Multi-tenant Organizations ───────────────────────────────────────────────
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships   Membership[]
+  invitations   Invitation[]
+  subscriptions Subscription[]
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Membership {
+  id             String     @id @default(cuid())
+  userId         String
+  organizationId String
+  role           MemberRole @default(MEMBER)
+  createdAt      DateTime   @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
+model Invitation {
+  id             String     @id @default(cuid())
+  email          String
+  organizationId String
+  role           MemberRole @default(MEMBER)
+  token          String     @unique @default(cuid())
+  invitedById    String
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime   @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("InvitedBy", fields: [invitedById], references: [id])
+}
+
+// ─── Stripe Billing ───────────────────────────────────────────────────────────
+
+model Subscription {
+  id                     String    @id @default(cuid())
+  organizationId         String
+  stripeCustomerId       String    @unique
+  stripeSubscriptionId   String?   @unique
+  stripePriceId          String?
+  stripeCurrentPeriodEnd DateTime?
+  status                 String    @default("inactive")
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ─── Background Jobs audit log ────────────────────────────────────────────────
+
+model JobLog {
+  id          String    @id @default(cuid())
+  jobName     String
+  jobId       String
+  status      String
+  payload     Json?
+  error       String?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([jobName])
+  @@index([status])
+}
