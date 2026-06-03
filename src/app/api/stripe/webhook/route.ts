@@ -39,6 +39,18 @@ async function handleStripeEvent(event: Stripe.Event) {
     case "customer.subscription.created":
     case "customer.subscription.updated": {
       const sub = event.data.object as Stripe.Subscription;
+      const organizationId = sub.metadata.organizationId;
+
+      if (!organizationId) {
+        // Returning 200 to prevent Stripe retry loop — this event has no
+        // organizationId in metadata so we cannot link it to a tenant.
+        console.warn(
+          "[stripe/webhook] skipping subscription upsert: organizationId missing from metadata",
+          { subscriptionId: sub.id, customerId: sub.customer }
+        );
+        break;
+      }
+
       await db.subscription.upsert({
         where: { stripeCustomerId: sub.customer as string },
         update: {
@@ -48,8 +60,7 @@ async function handleStripeEvent(event: Stripe.Event) {
           status: sub.status,
         },
         create: {
-          // organizationId must be set via metadata; skip if missing
-          organizationId: sub.metadata.organizationId ?? "",
+          organizationId,
           stripeCustomerId: sub.customer as string,
           stripeSubscriptionId: sub.id,
           stripePriceId: sub.items.data[0]?.price.id,
