@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { stripe, PLANS } from "@/lib/stripe";
 import { db } from "@/lib/db";
+import { requireOrgRole } from "@/lib/org";
+import { MemberRole } from "@prisma/client";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
@@ -22,6 +24,15 @@ export async function POST(req: NextRequest) {
   }
 
   const { orgSlug, plan } = parsed.data;
+
+  const membership = await requireOrgRole(orgSlug, MemberRole.ADMIN).catch(() => null);
+  if (!membership) {
+    return NextResponse.json(
+      { error: "Forbidden: insufficient role" },
+      { status: 403 }
+    );
+  }
+
   const priceId = PLANS[plan].priceId;
 
   const org = await db.organization.findUnique({
