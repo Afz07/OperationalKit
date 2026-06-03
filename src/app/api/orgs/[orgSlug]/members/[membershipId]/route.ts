@@ -26,6 +26,9 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   if (target.userId === session.user.id) {
     return NextResponse.json({ error: "Use /leave to remove yourself" }, { status: 400 });
   }
+  if (target.role === MemberRole.OWNER) {
+    return NextResponse.json({ error: "Cannot remove organization owner" }, { status: 403 });
+  }
 
   await db.membership.delete({ where: { id: membershipId } });
   return new NextResponse(null, { status: 204 });
