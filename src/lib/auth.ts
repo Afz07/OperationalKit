@@ -37,6 +37,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
+  events: {
+    // Fires once when a brand-new account is created. Enqueue a welcome email
+    // as a background job (loaded dynamically so pg-boss isn't pulled into the
+    // module graph of every page that imports auth).
+    async createUser({ user }) {
+      if (!user.email) return;
+      try {
+        const { enqueueJob, JOB_NAMES } = await import("@/lib/jobs");
+        const { welcomeEmailHtml } = await import("@/lib/email");
+        await enqueueJob(JOB_NAMES.SEND_EMAIL, {
+          to: user.email,
+          subject: "Welcome to OperationalKit",
+          html: welcomeEmailHtml({
+            name: user.name ?? "there",
+            dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+          }),
+        });
+      } catch (err) {
+        console.error("[auth] failed to enqueue welcome email:", err);
+      }
+    },
+  },
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",

@@ -75,6 +75,48 @@ export async function register() {
       }
     );
 
+    // Generic email job — used for welcome emails and any other one-off mail.
+    interface SendEmailJobData {
+      to: string;
+      subject: string;
+      html: string;
+      organizationId?: string;
+    }
+
+    await registerJob<SendEmailJobData>(JOB_NAMES.SEND_EMAIL, async (jobs) => {
+      for (const job of jobs) {
+        const { to, subject, html, organizationId } = job.data;
+
+        try {
+          await sendEmail({ to, subject, html });
+
+          await db.jobLog.create({
+            data: {
+              jobName: JOB_NAMES.SEND_EMAIL,
+              jobId: job.id ?? to,
+              organizationId: organizationId ?? null,
+              status: "completed",
+              payload: { to, subject },
+              completedAt: new Date(),
+            },
+          });
+        } catch (err) {
+          await db.jobLog.create({
+            data: {
+              jobName: JOB_NAMES.SEND_EMAIL,
+              jobId: job.id ?? to,
+              organizationId: organizationId ?? null,
+              status: "failed",
+              payload: { to, subject },
+              error: err instanceof Error ? err.message : String(err),
+            },
+          });
+          // Re-throw so pg-boss marks the job as failed and can retry it.
+          throw err;
+        }
+      }
+    });
+
     console.log("[instrumentation] pg-boss job handlers registered");
   } catch (err) {
     console.error("[instrumentation] failed to register job handlers:", err);
