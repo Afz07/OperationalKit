@@ -42,6 +42,12 @@ export function isResendConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
 }
 
+// Dev-only password-less login is available outside production. This is never
+// true on a real deployment, where NODE_ENV is "production".
+export function isDevLoginEnabled(): boolean {
+  return process.env.NODE_ENV !== "production";
+}
+
 // ─── Startup validation ───────────────────────────────────────────────────────
 // Called once from instrumentation.ts when the server boots. Throws with a
 // readable message for missing required vars, and warns (non-fatal) for optional
@@ -78,6 +84,11 @@ export function validateEnv(): void {
   if (!isResendConfigured()) {
     warnings.push(
       "Resend not configured — invitation emails won't be sent; share the invite link manually."
+    );
+  }
+  if (isDevLoginEnabled()) {
+    warnings.push(
+      "Dev login is ENABLED (non-production) — anyone can sign in as an existing user without a password."
     );
   }
 

@@ -1,10 +1,15 @@
 import { signIn } from "@/lib/auth";
-import { isGitHubAuthConfigured, isGoogleAuthConfigured } from "@/lib/env";
+import {
+  isGitHubAuthConfigured,
+  isGoogleAuthConfigured,
+  isDevLoginEnabled,
+} from "@/lib/env";
 
 export default function SignInPage() {
   const githubEnabled = isGitHubAuthConfigured();
   const googleEnabled = isGoogleAuthConfigured();
-  const anyEnabled = githubEnabled || googleEnabled;
+  const devEnabled = isDevLoginEnabled();
+  const anyEnabled = githubEnabled || googleEnabled || devEnabled;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -73,6 +78,25 @@ export default function SignInPage() {
                     />
                   </svg>
                   Continue with Google
+                </button>
+              </form>
+            )}
+
+            {devEnabled && (
+              <form
+                action={async () => {
+                  "use server";
+                  await signIn("dev", {
+                    email: "alice@example.com",
+                    redirectTo: "/dashboard",
+                  });
+                }}
+              >
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                >
+                  Continue as demo user (dev only)
                 </button>
               </form>
             )}
