@@ -67,7 +67,10 @@ npm install
 cp .env.example .env
 # Fill in DATABASE_URL, AUTH_SECRET, OAuth keys, Stripe keys, Resend key
 
-# 4. Database
+# 4. Database — start local Postgres with Docker (optional)
+docker compose up -d
+
+# apply the schema (this also seeds demo data)
 npx prisma migrate dev --name init
 
 # 5. Run
