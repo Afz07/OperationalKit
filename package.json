@@ -10,7 +10,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "setup": "tsx scripts/doctor.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

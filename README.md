@@ -73,6 +73,9 @@ docker compose up -d
 # apply the schema (this also seeds demo data)
 npx prisma migrate dev --name init
 
+# (optional) verify everything is wired up
+npm run setup
+
 # 5. Run
 npm run dev
 ```
