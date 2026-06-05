@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import { MemberRole } from "@prisma/client";
 import InviteForm from "@/components/dashboard/InviteForm";
 import RemoveMemberButton from "@/components/dashboard/RemoveMemberButton";
@@ -52,10 +53,12 @@ export default async function SettingsPage({ params }: Props) {
             <li key={m.id} className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {m.user.image && (
-                  <img
+                  <Image
                     src={m.user.image}
                     alt=""
-                    className="w-8 h-8 rounded-full"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
                   />
                 )}
                 <div>

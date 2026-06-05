@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -63,10 +64,12 @@ export default async function Sidebar({ orgSlug }: Props) {
       <div className="p-3 border-t">
         <div className="flex items-center gap-2 px-3 py-2">
           {session.user.image && (
-            <img
+            <Image
               src={session.user.image}
               alt=""
-              className="w-6 h-6 rounded-full"
+              width={24}
+              height={24}
+              className="rounded-full"
             />
           )}
           <span className="text-xs text-gray-500 truncate">
