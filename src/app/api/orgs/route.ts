@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { createOrganization } from "@/lib/org";
+import { assertCanCreateWorkspace, LimitError } from "@/lib/limits";
 import { z } from "zod";
 
 const createOrgSchema = z.object({
@@ -20,6 +21,15 @@ export async function POST(req: NextRequest) {
       { error: parsed.error.flatten() },
       { status: 422 }
     );
+  }
+
+  try {
+    await assertCanCreateWorkspace(session.user.id);
+  } catch (err) {
+    if (err instanceof LimitError) {
+      return NextResponse.json({ error: err.message }, { status: 402 });
+    }
+    throw err;
   }
 
   const org = await createOrganization(session.user.id, parsed.data.name);

@@ -21,7 +21,12 @@ export default function OnboardingPage() {
     });
 
     if (!res.ok) {
-      setError("Failed to create workspace. Please try again.");
+      const data = await res.json().catch(() => null);
+      setError(
+        typeof data?.error === "string"
+          ? data.error
+          : "Failed to create workspace. Please try again."
+      );
       setLoading(false);
       return;
     }

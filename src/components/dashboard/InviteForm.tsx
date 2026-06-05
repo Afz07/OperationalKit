@@ -28,7 +28,12 @@ export default function InviteForm({ orgSlug }: { orgSlug: string }) {
       setInviteLink(`${window.location.origin}/invite/${token}`);
       setEmail("");
     } else {
-      setError("Failed to create invitation. Try again.");
+      const data = await res.json().catch(() => null);
+      setError(
+        typeof data?.error === "string"
+          ? data.error
+          : "Failed to create invitation. Try again."
+      );
     }
     setLoading(false);
   }

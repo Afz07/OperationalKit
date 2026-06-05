@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { requireOrgRole } from "@/lib/org";
 import { enqueueJob, JOB_NAMES } from "@/lib/jobs";
+import { assertCanAddMember, assertWithinJobQuota, LimitError } from "@/lib/limits";
 import { MemberRole } from "@prisma/client";
 import { z } from "zod";
 import { addDays } from "date-fns";
@@ -36,6 +37,17 @@ export async function POST(req: NextRequest) {
   );
   if (!membership) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Enforce Free-tier limits (lifted for Pro organizations).
+  try {
+    await assertCanAddMember(membership.organizationId);
+    await assertWithinJobQuota(membership.organizationId);
+  } catch (err) {
+    if (err instanceof LimitError) {
+      return NextResponse.json({ error: err.message }, { status: 402 });
+    }
+    throw err;
   }
 
   const invitation = await db.invitation.create({
