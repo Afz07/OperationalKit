@@ -6,12 +6,16 @@ export default function InviteForm({ orgSlug }: { orgSlug: string }) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"MEMBER" | "ADMIN">("MEMBER");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [error, setError] = useState("");
+  const [inviteLink, setInviteLink] = useState("");
+  const [copied, setCopied] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
+    setError("");
+    setInviteLink("");
+    setCopied(false);
 
     const res = await fetch("/api/invitations", {
       method: "POST",
@@ -20,12 +24,19 @@ export default function InviteForm({ orgSlug }: { orgSlug: string }) {
     });
 
     if (res.ok) {
-      setMessage({ type: "success", text: `Invitation sent to ${email}` });
+      const { token } = await res.json();
+      setInviteLink(`${window.location.origin}/invite/${token}`);
       setEmail("");
     } else {
-      setMessage({ type: "error", text: "Failed to send invitation. Try again." });
+      setError("Failed to create invitation. Try again.");
     }
     setLoading(false);
+  }
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
@@ -52,17 +63,34 @@ export default function InviteForm({ orgSlug }: { orgSlug: string }) {
           disabled={loading}
           className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 whitespace-nowrap"
         >
-          {loading ? "Sending…" : "Send invite"}
+          {loading ? "Creating…" : "Send invite"}
         </button>
       </div>
-      {message && (
-        <p
-          className={`text-sm ${
-            message.type === "success" ? "text-green-600" : "text-red-500"
-          }`}
-        >
-          {message.text}
-        </p>
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
+      {inviteLink && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-2">
+          <p className="text-sm text-green-700">
+            Invitation created. We&apos;ll email it if Resend is configured —
+            otherwise share this link directly:
+          </p>
+          <div className="flex gap-2">
+            <input
+              readOnly
+              value={inviteLink}
+              onFocus={(e) => e.target.select()}
+              className="flex-1 border rounded-lg px-3 py-2 text-xs font-mono bg-white"
+            />
+            <button
+              type="button"
+              onClick={copyLink}
+              className="border border-gray-300 text-sm px-3 py-2 rounded-lg hover:bg-white transition-colors whitespace-nowrap"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        </div>
       )}
     </form>
   );

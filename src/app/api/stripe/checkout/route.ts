@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { stripe, PLANS } from "@/lib/stripe";
 import { db } from "@/lib/db";
 import { requireOrgRole } from "@/lib/org";
+import { isStripeConfigured } from "@/lib/env";
 import { MemberRole } from "@prisma/client";
 import { z } from "zod";
 
@@ -12,6 +13,13 @@ const checkoutSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  if (!isStripeConfigured()) {
+    return NextResponse.json(
+      { error: "Billing is not configured" },
+      { status: 503 }
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

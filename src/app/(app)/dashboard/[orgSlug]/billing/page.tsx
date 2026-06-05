@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { PLANS } from "@/lib/stripe";
+import { isStripeConfigured } from "@/lib/env";
 import UpgradeButton from "@/components/dashboard/UpgradeButton";
 
 interface Props {
@@ -25,6 +26,7 @@ export default async function BillingPage({ params, searchParams }: Props) {
   const sub = membership.organization.subscriptions[0];
   const isActive = sub?.status === "active";
   const periodEnd = sub?.stripeCurrentPeriodEnd;
+  const stripeConfigured = isStripeConfigured();
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
@@ -74,7 +76,16 @@ export default async function BillingPage({ params, searchParams }: Props) {
         </ul>
       </div>
 
-      {!isActive ? (
+      {!stripeConfigured ? (
+        <div className="bg-gray-50 border rounded-xl p-6">
+          <h2 className="font-semibold mb-2">Billing not configured</h2>
+          <p className="text-sm text-gray-500">
+            Set <span className="font-mono">STRIPE_SECRET_KEY</span> and{" "}
+            <span className="font-mono">STRIPE_PRO_PRICE_ID</span> to enable
+            upgrades. See <span className="font-mono">.env.example</span>.
+          </p>
+        </div>
+      ) : !isActive ? (
         <div className="bg-gray-50 border rounded-xl p-6">
           <h2 className="font-semibold mb-2">Upgrade to Pro — $29/month</h2>
           <p className="text-sm text-gray-500 mb-4">

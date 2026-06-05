@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
+import { isStripeConfigured } from "@/lib/env";
 
 export async function GET(req: NextRequest) {
+  if (!isStripeConfigured()) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.redirect(new URL("/auth/signin", req.url));

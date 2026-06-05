@@ -14,8 +14,10 @@ export async function register() {
   // Only run in the Node.js runtime, not during Edge or build phases.
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
-  // Skip at build time — DATABASE_URL is not available during `next build`.
-  if (!process.env.DATABASE_URL) return;
+  // Fail fast with a readable message if required env vars are missing, and warn
+  // about any optional services (Stripe, Resend, OAuth) that are turned off.
+  const { validateEnv } = await import("@/lib/env");
+  validateEnv();
 
   try {
     const { registerJob, JOB_NAMES } = await import("@/lib/jobs");
