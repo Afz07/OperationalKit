@@ -120,7 +120,7 @@ export default function LandingPage() {
       <section className="bg-gray-50 py-20">
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-4">
-            Everything you need, nothing you don't
+            Everything you need, nothing you don&apos;t
           </h2>
           <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto">
             Spend the first week building features, not setting up auth and
