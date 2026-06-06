@@ -28,7 +28,7 @@ export default function RemoveMemberButton({ membershipId, orgSlug }: Props) {
     <button
       onClick={handleRemove}
       disabled={loading}
-      className="text-xs text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
+      className="text-xs font-medium text-rose-500 transition-colors hover:text-rose-700 disabled:opacity-50"
     >
       {loading ? "…" : "Remove"}
     </button>

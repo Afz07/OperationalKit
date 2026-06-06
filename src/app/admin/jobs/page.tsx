@@ -22,71 +22,81 @@ export default async function AdminJobsPage() {
   ]);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="mx-auto max-w-6xl p-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <Link href="/admin" className="text-sm text-gray-500 hover:text-black">
+          <Link
+            href="/admin"
+            className="text-sm text-zinc-500 transition-colors hover:text-zinc-900"
+          >
             ← Admin
           </Link>
-          <h1 className="text-2xl font-bold mt-1">Background Jobs</h1>
+          <h1 className="mt-1 text-2xl font-semibold text-zinc-900">
+            Background jobs
+          </h1>
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-500">
+        <div className="flex items-center gap-4 text-sm text-zinc-500">
           <span>{totalCount} total</span>
           {failedCount > 0 && (
-            <span className="text-red-600 font-medium">{failedCount} failed</span>
+            <span className="font-medium text-rose-600">
+              {failedCount} failed
+            </span>
           )}
         </div>
       </div>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
+      <div className="card overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="border-b border-zinc-200 bg-zinc-50/60">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Job</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Organization</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Status</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Error</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Completed</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Created</th>
+              <Th>Job</Th>
+              <Th>Organization</Th>
+              <Th>Status</Th>
+              <Th>Error</Th>
+              <Th>Completed</Th>
+              <Th>Created</Th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-zinc-100">
             {jobs.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                <td
+                  colSpan={6}
+                  className="px-4 py-8 text-center text-zinc-400"
+                >
                   No jobs recorded yet.
                 </td>
               </tr>
             )}
             {jobs.map((job) => (
-              <tr key={job.id}>
-                <td className="px-4 py-3 font-mono text-xs text-gray-700">
+              <tr key={job.id} className="hover:bg-zinc-50/60">
+                <td className="px-4 py-3 font-mono text-xs text-zinc-700">
                   {job.jobName}
                 </td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-zinc-500">
                   {job.organization ? (
                     <Link
                       href={`/dashboard/${job.organization.slug}`}
-                      className="hover:text-black hover:underline"
+                      className="transition-colors hover:text-zinc-900 hover:underline"
                     >
                       {job.organization.name}
                     </Link>
                   ) : (
-                    <span className="text-gray-300">—</span>
+                    <span className="text-zinc-300">—</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={job.status} />
                 </td>
-                <td className="px-4 py-3 font-mono text-xs text-red-600 max-w-xs truncate">
-                  {job.error ?? <span className="text-gray-300">—</span>}
+                <td className="max-w-xs truncate px-4 py-3 font-mono text-xs text-rose-600">
+                  {job.error ?? <span className="text-zinc-300">—</span>}
                 </td>
-                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                <td className="whitespace-nowrap px-4 py-3 text-zinc-500">
                   {job.completedAt
                     ? new Date(job.completedAt).toLocaleString()
                     : "—"}
                 </td>
-                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                <td className="whitespace-nowrap px-4 py-3 text-zinc-500">
                   {new Date(job.createdAt).toLocaleString()}
                 </td>
               </tr>
@@ -98,18 +108,22 @@ export default async function AdminJobsPage() {
   );
 }
 
+function Th({ children }: { children: React.ReactNode }) {
+  return (
+    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-zinc-400">
+      {children}
+    </th>
+  );
+}
+
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    completed: "bg-green-50 text-green-700",
-    failed: "bg-red-50 text-red-600",
-    pending: "bg-yellow-50 text-yellow-700",
+    completed: "bg-emerald-50 text-emerald-700",
+    failed: "bg-rose-50 text-rose-600",
+    pending: "bg-amber-50 text-amber-700",
   };
   return (
-    <span
-      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-        styles[status] ?? "bg-gray-100 text-gray-600"
-      }`}
-    >
+    <span className={`badge ${styles[status] ?? "bg-zinc-100 text-zinc-600"}`}>
       {status}
     </span>
   );

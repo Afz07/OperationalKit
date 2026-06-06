@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import Image from "next/image";
+import Avatar from "@/components/dashboard/Avatar";
 
 interface Props {
   params: Promise<{ orgSlug: string }>;
@@ -34,13 +34,15 @@ export default async function OrgDashboardPage({ params }: Props) {
   const isActive = sub?.status === "active";
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">{organization.name}</h1>
-        <p className="text-gray-500 text-sm">/{organization.slug}</p>
+        <h1 className="text-2xl font-semibold text-zinc-900">
+          {organization.name}
+        </h1>
+        <p className="mt-0.5 text-sm text-zinc-500">/{organization.slug}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
         <StatCard
           label="Team members"
           value={organization.memberships.length}
@@ -50,48 +52,44 @@ export default async function OrgDashboardPage({ params }: Props) {
           value={isActive ? "Pro" : "Free"}
           highlight={isActive}
         />
-        <StatCard label="Your role" value={membership.role} />
+        <StatCard label="Your role" value={titleCase(membership.role)} />
       </div>
 
-      <div className="bg-white rounded-xl border p-6 mb-6">
-        <h2 className="font-semibold mb-4">Team</h2>
-        <ul className="space-y-3">
+      <div className="card mb-6 p-6">
+        <h2 className="mb-4 text-base font-semibold text-zinc-900">Team</h2>
+        <ul className="divide-y divide-zinc-100">
           {organization.memberships.map((m) => (
-            <li key={m.id} className="flex items-center justify-between">
+            <li
+              key={m.id}
+              className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+            >
               <div className="flex items-center gap-3">
-                {m.user.image && (
-                  <Image
-                    src={m.user.image}
-                    alt=""
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
-                )}
+                <Avatar
+                  src={m.user.image}
+                  name={m.user.name ?? m.user.email ?? "?"}
+                  size={36}
+                />
                 <div>
-                  <p className="text-sm font-medium">{m.user.name}</p>
-                  <p className="text-xs text-gray-500">{m.user.email}</p>
+                  <p className="text-sm font-medium text-zinc-900">
+                    {m.user.name ?? "Unnamed"}
+                  </p>
+                  <p className="text-xs text-zinc-500">{m.user.email}</p>
                 </div>
               </div>
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
-                {m.role}
-              </span>
+              <RoleBadge role={m.role} />
             </li>
           ))}
         </ul>
       </div>
 
       {!isActive && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-          <h3 className="font-semibold text-amber-800 mb-1">Upgrade to Pro</h3>
-          <p className="text-sm text-amber-700 mb-3">
+        <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6">
+          <h3 className="font-semibold text-zinc-900">Upgrade to Pro</h3>
+          <p className="mt-1 mb-4 text-sm text-zinc-500">
             Unlock unlimited members, jobs, and priority support.
           </p>
-          <a
-            href={`/dashboard/${orgSlug}/billing`}
-            className="inline-block bg-amber-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors"
-          >
-            View Plans →
+          <a href={`/dashboard/${orgSlug}/billing`} className="btn-primary">
+            View plans →
           </a>
         </div>
       )}
@@ -109,13 +107,34 @@ function StatCard({
   highlight?: boolean;
 }) {
   return (
-    <div className="bg-white rounded-xl border p-5">
-      <p className="text-xs text-gray-500 uppercase tracking-wide">{label}</p>
+    <div className="card p-5">
+      <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+        {label}
+      </p>
       <p
-        className={`text-2xl font-bold mt-1 ${highlight ? "text-green-600" : ""}`}
+        className={`mt-1 text-2xl font-semibold ${
+          highlight ? "text-emerald-600" : "text-zinc-900"
+        }`}
       >
         {value}
       </p>
     </div>
   );
+}
+
+function RoleBadge({ role }: { role: string }) {
+  const styles: Record<string, string> = {
+    OWNER: "bg-zinc-900 text-white",
+    ADMIN: "bg-indigo-50 text-indigo-700",
+    MEMBER: "bg-zinc-100 text-zinc-600",
+  };
+  return (
+    <span className={`badge ${styles[role] ?? styles.MEMBER}`}>
+      {titleCase(role)}
+    </span>
+  );
+}
+
+function titleCase(s: string) {
+  return s.charAt(0) + s.slice(1).toLowerCase();
 }

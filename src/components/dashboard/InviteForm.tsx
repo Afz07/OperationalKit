@@ -46,19 +46,19 @@ export default function InviteForm({ orgSlug }: { orgSlug: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="teammate@company.com"
           required
-          className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="input flex-1"
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value as "MEMBER" | "ADMIN")}
-          className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="input sm:w-32"
         >
           <option value="MEMBER">Member</option>
           <option value="ADMIN">Admin</option>
@@ -66,17 +66,17 @@ export default function InviteForm({ orgSlug }: { orgSlug: string }) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 whitespace-nowrap"
+          className="btn-primary whitespace-nowrap"
         >
           {loading ? "Creating…" : "Send invite"}
         </button>
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-rose-600">{error}</p>}
 
       {inviteLink && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-2">
-          <p className="text-sm text-green-700">
+        <div className="space-y-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+          <p className="text-sm text-emerald-700">
             Invitation created. We&apos;ll email it if Resend is configured —
             otherwise share this link directly:
           </p>
@@ -85,12 +85,12 @@ export default function InviteForm({ orgSlug }: { orgSlug: string }) {
               readOnly
               value={inviteLink}
               onFocus={(e) => e.target.select()}
-              className="flex-1 border rounded-lg px-3 py-2 text-xs font-mono bg-white"
+              className="flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-700"
             />
             <button
               type="button"
               onClick={copyLink}
-              className="border border-gray-300 text-sm px-3 py-2 rounded-lg hover:bg-white transition-colors whitespace-nowrap"
+              className="btn-secondary whitespace-nowrap"
             >
               {copied ? "Copied!" : "Copy"}
             </button>

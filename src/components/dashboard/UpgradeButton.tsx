@@ -1,22 +1,29 @@
 "use client";
 
+import { useState } from "react";
+
 export default function UpgradeButton({ orgSlug }: { orgSlug: string }) {
+  const [loading, setLoading] = useState(false);
+
   async function handleClick() {
-    const res = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orgSlug, plan: "PRO" }),
-    });
-    const { url } = await res.json();
-    window.location.href = url;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orgSlug, plan: "PRO" }),
+      });
+      const { url } = await res.json();
+      if (url) window.location.href = url;
+      else setLoading(false);
+    } catch {
+      setLoading(false);
+    }
   }
 
   return (
-    <button
-      onClick={handleClick}
-      className="bg-black text-white text-sm px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
-    >
-      Upgrade to Pro →
+    <button onClick={handleClick} disabled={loading} className="btn-primary">
+      {loading ? "Redirecting…" : "Upgrade to Pro →"}
     </button>
   );
 }

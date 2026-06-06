@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -18,12 +19,17 @@ export default async function InvitePage({ params }: Props) {
 
   if (!invitation || invitation.expiresAt < new Date() || invitation.acceptedAt) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-xl font-bold mb-2">Invalid invitation</h1>
-          <p className="text-gray-500 text-sm">
-            This invitation link has expired or already been used.
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+        <div className="card w-full max-w-sm p-8 text-center shadow-sm">
+          <h1 className="mb-2 text-xl font-semibold text-zinc-900">
+            Invalid invitation
+          </h1>
+          <p className="mb-6 text-sm text-zinc-500">
+            This invitation link has expired or has already been used.
           </p>
+          <Link href="/" className="btn-secondary">
+            Go home
+          </Link>
         </div>
       </div>
     );

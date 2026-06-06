@@ -19,71 +19,62 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="mx-auto max-w-5xl p-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Admin</h1>
-          <p className="text-gray-500 text-sm">Platform overview</p>
+          <h1 className="text-2xl font-semibold text-zinc-900">Admin</h1>
+          <p className="text-sm text-zinc-500">Platform overview</p>
         </div>
         <div className="flex gap-3">
-          <Link
-            href="/admin/orgs"
-            className="text-sm border px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <Link href="/admin/orgs" className="btn-secondary">
             All orgs →
           </Link>
-          <Link
-            href="/admin/jobs"
-            className="text-sm border px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <Link href="/admin/jobs" className="btn-secondary">
             All jobs →
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="mb-8 grid grid-cols-3 gap-4">
         <StatCard label="Organizations" value={orgCount} />
         <StatCard label="Users" value={userCount} />
         <StatCard label="Active subscriptions" value={subCount} highlight />
       </div>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b bg-gray-50">
-          <h2 className="text-sm font-semibold">Recent job activity</h2>
+      <div className="card overflow-hidden">
+        <div className="border-b border-zinc-200 bg-zinc-50/60 px-4 py-3">
+          <h2 className="text-sm font-semibold text-zinc-900">
+            Recent job activity
+          </h2>
         </div>
         <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left px-4 py-2 font-medium text-gray-500">Job</th>
-              <th className="text-left px-4 py-2 font-medium text-gray-500">Status</th>
-              <th className="text-left px-4 py-2 font-medium text-gray-500">When</th>
+          <thead className="border-b border-zinc-100">
+            <tr>
+              <Th>Job</Th>
+              <Th>Status</Th>
+              <Th>When</Th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-zinc-100">
             {recentJobs.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-6 text-center text-gray-400">
+                <td
+                  colSpan={3}
+                  className="px-4 py-8 text-center text-zinc-400"
+                >
                   No jobs yet
                 </td>
               </tr>
             )}
             {recentJobs.map((j) => (
-              <tr key={j.id}>
-                <td className="px-4 py-2 font-mono text-xs">{j.jobName}</td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
-                      j.status === "completed"
-                        ? "bg-green-50 text-green-700"
-                        : j.status === "failed"
-                          ? "bg-red-50 text-red-600"
-                          : "bg-yellow-50 text-yellow-700"
-                    }`}
-                  >
-                    {j.status}
-                  </span>
+              <tr key={j.id} className="hover:bg-zinc-50/60">
+                <td className="px-4 py-2.5 font-mono text-xs text-zinc-700">
+                  {j.jobName}
                 </td>
-                <td className="px-4 py-2 text-gray-500">
+                <td className="px-4 py-2.5">
+                  <StatusBadge status={j.status} />
+                </td>
+                <td className="px-4 py-2.5 text-zinc-500">
                   {new Date(j.createdAt).toLocaleString()}
                 </td>
               </tr>
@@ -92,6 +83,14 @@ export default async function AdminPage() {
         </table>
       </div>
     </div>
+  );
+}
+
+function Th({ children }: { children: React.ReactNode }) {
+  return (
+    <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-zinc-400">
+      {children}
+    </th>
   );
 }
 
@@ -105,11 +104,30 @@ function StatCard({
   highlight?: boolean;
 }) {
   return (
-    <div className="bg-white border rounded-xl p-5">
-      <p className="text-xs text-gray-500 uppercase tracking-wide">{label}</p>
-      <p className={`text-2xl font-bold mt-1 ${highlight ? "text-green-600" : ""}`}>
+    <div className="card p-5">
+      <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+        {label}
+      </p>
+      <p
+        className={`mt-1 text-2xl font-semibold ${
+          highlight ? "text-emerald-600" : "text-zinc-900"
+        }`}
+      >
         {value}
       </p>
     </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    completed: "bg-emerald-50 text-emerald-700",
+    failed: "bg-rose-50 text-rose-600",
+    pending: "bg-amber-50 text-amber-700",
+  };
+  return (
+    <span className={`badge ${styles[status] ?? "bg-zinc-100 text-zinc-600"}`}>
+      {status}
+    </span>
   );
 }

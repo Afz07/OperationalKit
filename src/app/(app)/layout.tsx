@@ -9,5 +9,5 @@ export default async function AppLayout({
   const session = await auth();
   if (!session?.user) redirect("/auth/signin");
 
-  return <div className="flex min-h-screen bg-gray-50">{children}</div>;
+  return <div className="flex min-h-screen bg-zinc-50">{children}</div>;
 }

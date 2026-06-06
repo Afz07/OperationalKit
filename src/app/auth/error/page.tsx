@@ -16,17 +16,26 @@ export default async function AuthErrorPage({ searchParams }: Props) {
   const message = ERROR_MESSAGES[error ?? "Default"] ?? ERROR_MESSAGES.Default;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-xl shadow-sm border w-full max-w-sm text-center">
-        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-red-500 text-xl">✕</span>
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+      <div className="card w-full max-w-sm p-8 text-center shadow-sm">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-50">
+          <svg
+            className="h-6 w-6 text-rose-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
         </div>
-        <h1 className="text-lg font-bold mb-2">Authentication error</h1>
-        <p className="text-gray-500 text-sm mb-6">{message}</p>
-        <Link
-          href="/auth/signin"
-          className="inline-block bg-black text-white text-sm px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
-        >
+        <h1 className="mb-2 text-lg font-semibold text-zinc-900">
+          Authentication error
+        </h1>
+        <p className="mb-6 text-sm text-zinc-500">{message}</p>
+        <Link href="/auth/signin" className="btn-primary">
           Try again
         </Link>
       </div>

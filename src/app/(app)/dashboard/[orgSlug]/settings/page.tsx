@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import { MemberRole } from "@prisma/client";
+import Avatar from "@/components/dashboard/Avatar";
 import InviteForm from "@/components/dashboard/InviteForm";
 import RemoveMemberButton from "@/components/dashboard/RemoveMemberButton";
 
@@ -39,42 +39,40 @@ export default async function SettingsPage({ params }: Props) {
     membership.role === MemberRole.OWNER;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-1">Settings</h1>
-      <p className="text-gray-500 text-sm mb-8">
+    <div className="mx-auto max-w-3xl p-8">
+      <h1 className="mb-1 text-2xl font-semibold text-zinc-900">Settings</h1>
+      <p className="mb-8 text-sm text-zinc-500">
         Manage team members and workspace settings.
       </p>
 
       {/* Team members */}
-      <div className="bg-white border rounded-xl p-6 mb-6">
-        <h2 className="font-semibold mb-4">Team members</h2>
-        <ul className="space-y-3 mb-6">
+      <div className="card mb-6 p-6">
+        <h2 className="mb-4 text-base font-semibold text-zinc-900">
+          Team members
+        </h2>
+        <ul className="divide-y divide-zinc-100">
           {organization.memberships.map((m) => (
-            <li key={m.id} className="flex items-center justify-between">
+            <li
+              key={m.id}
+              className="flex items-center justify-between py-3 first:pt-0"
+            >
               <div className="flex items-center gap-3">
-                {m.user.image && (
-                  <Image
-                    src={m.user.image}
-                    alt=""
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
-                )}
+                <Avatar
+                  src={m.user.image}
+                  name={m.user.name ?? m.user.email ?? "?"}
+                  size={36}
+                />
                 <div>
-                  <p className="text-sm font-medium">{m.user.name}</p>
-                  <p className="text-xs text-gray-500">{m.user.email}</p>
+                  <p className="text-sm font-medium text-zinc-900">
+                    {m.user.name ?? "Unnamed"}
+                  </p>
+                  <p className="text-xs text-zinc-500">{m.user.email}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
-                  {m.role}
-                </span>
+              <div className="flex items-center gap-3">
+                <RoleBadge role={m.role} />
                 {isAdmin && m.userId !== session.user?.id && (
-                  <RemoveMemberButton
-                    membershipId={m.id}
-                    orgSlug={orgSlug}
-                  />
+                  <RemoveMemberButton membershipId={m.id} orgSlug={orgSlug} />
                 )}
               </div>
             </li>
@@ -83,8 +81,8 @@ export default async function SettingsPage({ params }: Props) {
 
         {/* Pending invitations */}
         {organization.invitations.length > 0 && (
-          <div className="border-t pt-4">
-            <p className="text-xs text-gray-500 font-medium mb-3 uppercase tracking-wide">
+          <div className="mt-4 border-t border-zinc-100 pt-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-400">
               Pending invitations
             </p>
             <ul className="space-y-2">
@@ -93,9 +91,9 @@ export default async function SettingsPage({ params }: Props) {
                   key={inv.id}
                   className="flex items-center justify-between text-sm"
                 >
-                  <span className="text-gray-600">{inv.email}</span>
-                  <span className="text-xs bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-full">
-                    pending
+                  <span className="text-zinc-600">{inv.email}</span>
+                  <span className="badge bg-amber-50 text-amber-700">
+                    Pending
                   </span>
                 </li>
               ))}
@@ -106,11 +104,23 @@ export default async function SettingsPage({ params }: Props) {
 
       {/* Invite form */}
       {isAdmin && (
-        <div className="bg-white border rounded-xl p-6">
-          <h2 className="font-semibold mb-4">Invite teammate</h2>
+        <div className="card p-6">
+          <h2 className="mb-4 text-base font-semibold text-zinc-900">
+            Invite teammate
+          </h2>
           <InviteForm orgSlug={orgSlug} />
         </div>
       )}
     </div>
   );
+}
+
+function RoleBadge({ role }: { role: string }) {
+  const styles: Record<string, string> = {
+    OWNER: "bg-zinc-900 text-white",
+    ADMIN: "bg-indigo-50 text-indigo-700",
+    MEMBER: "bg-zinc-100 text-zinc-600",
+  };
+  const label = role.charAt(0) + role.slice(1).toLowerCase();
+  return <span className={`badge ${styles[role] ?? styles.MEMBER}`}>{label}</span>;
 }

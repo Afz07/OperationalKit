@@ -36,16 +36,18 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-xl shadow-sm border w-full max-w-sm">
-        <h1 className="text-xl font-bold mb-1">Create your workspace</h1>
-        <p className="text-gray-500 text-sm mb-6">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+      <div className="card w-full max-w-sm p-8 shadow-sm">
+        <h1 className="mb-1 text-xl font-semibold text-zinc-900">
+          Create your workspace
+        </h1>
+        <p className="mb-6 text-sm text-zinc-500">
           This is where your team collaborates.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="mb-1.5 block text-sm font-medium text-zinc-700">
               Workspace name
             </label>
             <input
@@ -53,18 +55,19 @@ export default function OnboardingPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Acme Inc."
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="input"
               required
               minLength={2}
+              autoFocus
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-sm text-rose-600">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="btn-primary w-full py-2.5"
           >
             {loading ? "Creating…" : "Create workspace →"}
           </button>
