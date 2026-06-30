@@ -22,6 +22,7 @@ export default async function Sidebar({ orgSlug }: Props) {
 
   const NAV = [
     { href: `/dashboard/${orgSlug}`, label: "Overview" },
+    { href: `/dashboard/${orgSlug}/datasets`, label: "Datasets" },
     { href: `/dashboard/${orgSlug}/jobs`, label: "Jobs" },
     { href: `/dashboard/${orgSlug}/settings`, label: "Settings" },
     { href: `/dashboard/${orgSlug}/billing`, label: "Billing" },
