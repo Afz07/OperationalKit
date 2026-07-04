@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="720" viewBox="0 0 760 720" font-family="'Segoe UI', 'Noto Sans', sans-serif">
+  <style>
+    .lbl { font-size: 13px; fill: #202020; }
+    .mut { font-size: 13px; fill: #444; }
+    .hdr { font-size: 12px; fill: #333; font-weight: 600; }
+    .cell{ font-size: 13px; fill: #1c1c1c; }
+    .btn { font-size: 13px; fill: #1c1c1c; }
+    .ph  { font-size: 13px; fill: #9a9a9a; }
+    .cap { font-size: 12px; fill: #666; }
+  </style>
+
+  <rect width="760" height="720" fill="#e9edf1"/>
+
+  <!-- ======================= JENDELA UTAMA ======================= -->
+  <g>
+    <rect x="20" y="12" width="700" height="470" rx="6" fill="#f0f0f0" stroke="#c7ccd1"/>
+    <!-- title bar -->
+    <path d="M20 18 a6 6 0 0 1 6 -6 h688 a6 6 0 0 1 6 6 v24 h-700 z" fill="#ffffff"/>
+    <line x1="20" y1="42" x2="720" y2="42" stroke="#dfe3e7"/>
+    <text x="36" y="30" font-size="13" fill="#1a1a1a" font-weight="600">Todo Sederhana</text>
+    <!-- window controls -->
+    <text x="648" y="30" font-size="13" fill="#555">&#8211;</text>
+    <text x="676" y="30" font-size="12" fill="#555">&#9633;</text>
+    <text x="702" y="30" font-size="13" fill="#555">&#10005;</text>
+
+    <!-- ---- BILAH INPUT (isi sekaligus) ---- -->
+    <text x="30" y="66" class="lbl">Judul:</text>
+    <rect x="68" y="53" width="210" height="23" fill="#ffffff" stroke="#b9bdc2"/>
+    <text x="76" y="69" class="ph">Judul tugas&#8230;</text>
+
+    <text x="288" y="66" class="lbl">Mulai:</text>
+    <rect x="326" y="53" width="96" height="23" fill="#ffffff" stroke="#b9bdc2"/>
+    <text x="333" y="69" class="cell">04/07/2026</text>
+    <path d="M410 60 l6 0 l-3 5 z" fill="#666"/>
+
+    <text x="432" y="66" class="lbl">Deadline:</text>
+    <rect x="486" y="53" width="96" height="23" fill="#ffffff" stroke="#b9bdc2"/>
+    <text x="493" y="69" class="cell">04/07/2026</text>
+    <path d="M570 60 l6 0 l-3 5 z" fill="#666"/>
+
+    <rect x="590" y="52" width="90" height="25" rx="3" fill="#e7f0fb" stroke="#8fb7e6"/>
+    <text x="612" y="69" class="btn">Tambah</text>
+
+    <!-- ---- DAFTAR (ListView report) ---- -->
+    <rect x="30" y="86" width="650" height="352" fill="#ffffff" stroke="#b9bdc2"/>
+    <!-- header -->
+    <rect x="30" y="86" width="650" height="27" fill="#f6f7f8"/>
+    <line x1="30" y1="113" x2="680" y2="113" stroke="#e3e5e8"/>
+    <text x="38"  y="104" class="hdr">Judul</text>
+    <text x="258" y="104" class="hdr">Mulai</text>
+    <text x="348" y="104" class="hdr">Deadline</text>
+    <text x="438" y="104" class="hdr">Status</text>
+    <text x="508" y="104" class="hdr">Keterangan</text>
+    <!-- column separators -->
+    <g stroke="#e9ebee">
+      <line x1="250" y1="86" x2="250" y2="438"/>
+      <line x1="340" y1="86" x2="340" y2="438"/>
+      <line x1="430" y1="86" x2="430" y2="438"/>
+      <line x1="500" y1="86" x2="500" y2="438"/>
+    </g>
+
+    <!-- selected row (row 1) -->
+    <rect x="31" y="113" width="648" height="28" fill="#cfe8ff"/>
+
+    <!-- rows -->
+    <!-- r1 -->
+    <text x="38"  y="132" class="cell">Desain laporan Q3</text>
+    <text x="258" y="132" class="cell">2026-07-01</text>
+    <text x="348" y="132" class="cell">2026-07-10</text>
+    <text x="438" y="132" class="cell">Aktif</text>
+    <text x="508" y="132" class="cell">Tumpang tindih</text>
+    <line x1="30" y1="141" x2="680" y2="141" stroke="#eef0f2"/>
+    <!-- r2 -->
+    <text x="38"  y="160" class="cell">Revisi proposal</text>
+    <text x="258" y="160" class="cell">2026-07-05</text>
+    <text x="348" y="160" class="cell">2026-07-15</text>
+    <text x="438" y="160" class="cell">Aktif</text>
+    <text x="508" y="160" class="cell">Tumpang tindih</text>
+    <line x1="30" y1="169" x2="680" y2="169" stroke="#eef0f2"/>
+    <!-- r3 -->
+    <text x="38"  y="188" class="cell">Bayar vendor</text>
+    <text x="258" y="188" class="cell">2026-06-28</text>
+    <text x="348" y="188" class="cell">2026-07-02</text>
+    <text x="438" y="188" class="cell">Aktif</text>
+    <text x="508" y="188" class="cell">Terlewat</text>
+    <line x1="30" y1="197" x2="680" y2="197" stroke="#eef0f2"/>
+    <!-- r4 -->
+    <text x="38"  y="216" class="cell">Riset kompetitor</text>
+    <text x="258" y="216" class="cell">2026-08-01</text>
+    <text x="348" y="216" class="cell">2026-08-03</text>
+    <text x="438" y="216" class="cell">Aktif</text>
+    <text x="508" y="216" class="mut">&#8212;</text>
+    <line x1="30" y1="225" x2="680" y2="225" stroke="#eef0f2"/>
+    <!-- r5 selesai (strikethrough) -->
+    <text x="38"  y="244" class="cell" fill="#8a8a8a" text-decoration="line-through">Kirim invoice</text>
+    <text x="258" y="244" class="cell" fill="#8a8a8a">2026-07-03</text>
+    <text x="348" y="244" class="cell" fill="#8a8a8a">2026-07-04</text>
+    <text x="438" y="244" class="cell" fill="#8a8a8a">Selesai</text>
+    <text x="508" y="244" class="mut">&#8212;</text>
+    <line x1="30" y1="253" x2="680" y2="253" stroke="#eef0f2"/>
+
+    <!-- ---- TOMBOL AKSI ---- -->
+    <rect x="30"  y="446" width="120" height="26" rx="3" fill="#f4f5f6" stroke="#b9bdc2"/>
+    <text x="52"  y="463" class="btn">Tandai Selesai</text>
+    <rect x="158" y="446" width="80"  height="26" rx="3" fill="#f4f5f6" stroke="#b9bdc2"/>
+    <text x="186" y="463" class="btn">Edit</text>
+    <rect x="244" y="446" width="80"  height="26" rx="3" fill="#f4f5f6" stroke="#b9bdc2"/>
+    <text x="268" y="463" class="btn">Hapus</text>
+  </g>
+
+  <!-- ======================= DIALOG PERINGATAN OVERLAP ======================= -->
+  <g>
+    <rect x="40" y="512" width="330" height="150" rx="6" fill="#f0f0f0" stroke="#c7ccd1"/>
+    <path d="M40 518 a6 6 0 0 1 6 -6 h318 a6 6 0 0 1 6 6 v22 h-330 z" fill="#ffffff"/>
+    <line x1="40" y1="540" x2="370" y2="540" stroke="#dfe3e7"/>
+    <text x="54" y="529" font-size="12" fill="#1a1a1a" font-weight="600">Peringatan tumpang tindih</text>
+    <text x="352" y="529" font-size="12" fill="#555">&#10005;</text>
+    <!-- warning icon -->
+    <path d="M64 566 l16 28 l-32 0 z" fill="#f2c200" stroke="#d9ad00"/>
+    <text x="70" y="590" font-size="15" fill="#4a3b00" font-weight="700">!</text>
+    <text x="96" y="568" font-size="12.5" fill="#222">Jadwal tugas ini tumpang tindih dengan</text>
+    <text x="96" y="586" font-size="12.5" fill="#222">tugas aktif lain. Tetap tambahkan?</text>
+    <rect x="196" y="620" width="76" height="26" rx="3" fill="#e7f0fb" stroke="#8fb7e6"/>
+    <text x="223" y="637" class="btn">Ya</text>
+    <rect x="282" y="620" width="76" height="26" rx="3" fill="#f4f5f6" stroke="#b9bdc2"/>
+    <text x="303" y="637" class="btn">Tidak</text>
+  </g>
+
+  <!-- ======================= DIALOG EDIT ======================= -->
+  <g>
+    <rect x="410" y="512" width="310" height="150" rx="6" fill="#f0f0f0" stroke="#c7ccd1"/>
+    <path d="M410 518 a6 6 0 0 1 6 -6 h298 a6 6 0 0 1 6 6 v22 h-310 z" fill="#ffffff"/>
+    <line x1="410" y1="540" x2="720" y2="540" stroke="#dfe3e7"/>
+    <text x="424" y="529" font-size="12" fill="#1a1a1a" font-weight="600">Edit Tugas</text>
+    <text x="702" y="529" font-size="12" fill="#555">&#10005;</text>
+
+    <text x="424" y="566" class="lbl">Judul:</text>
+    <rect x="474" y="553" width="230" height="22" fill="#ffffff" stroke="#b9bdc2"/>
+    <text x="481" y="569" class="cell">Desain laporan Q3</text>
+
+    <text x="424" y="594" class="lbl">Mulai:</text>
+    <rect x="474" y="581" width="120" height="22" fill="#ffffff" stroke="#b9bdc2"/>
+    <text x="481" y="597" class="cell">01/07/2026</text>
+
+    <text x="424" y="622" class="lbl">Deadline:</text>
+    <rect x="474" y="609" width="120" height="22" fill="#ffffff" stroke="#b9bdc2"/>
+    <text x="481" y="625" class="cell">10/07/2026</text>
+
+    <rect x="548" y="632" width="76" height="24" rx="3" fill="#e7f0fb" stroke="#8fb7e6"/>
+    <text x="571" y="648" class="btn">Simpan</text>
+    <rect x="632" y="632" width="72" height="24" rx="3" fill="#f4f5f6" stroke="#b9bdc2"/>
+    <text x="655" y="648" class="btn">Batal</text>
+  </g>
+
+  <!-- captions -->
+  <text x="20" y="700" class="cap">Ilustrasi tata letak (mockup) — jendela utama, dialog peringatan tumpang tindih, dan dialog edit. Tampilan native Windows: minim warna, tanpa emoji.</text>
+</svg>
