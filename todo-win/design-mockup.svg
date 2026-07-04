@@ -50,7 +50,7 @@
     <text x="258" y="104" class="hdr">Mulai</text>
     <text x="348" y="104" class="hdr">Deadline</text>
     <text x="438" y="104" class="hdr">Status</text>
-    <text x="508" y="104" class="hdr">Keterangan</text>
+    <text x="508" y="104" class="hdr">Follow-up</text>
     <!-- column separators -->
     <g stroke="#e9ebee">
       <line x1="250" y1="86" x2="250" y2="438"/>
@@ -68,14 +68,14 @@
     <text x="258" y="132" class="cell">2026-07-01</text>
     <text x="348" y="132" class="cell">2026-07-10</text>
     <text x="438" y="132" class="cell">Aktif</text>
-    <text x="508" y="132" class="cell">Tumpang tindih</text>
+    <text x="508" y="132" class="cell">Segera</text>
     <line x1="30" y1="141" x2="680" y2="141" stroke="#eef0f2"/>
     <!-- r2 -->
     <text x="38"  y="160" class="cell">Revisi proposal</text>
     <text x="258" y="160" class="cell">2026-07-05</text>
     <text x="348" y="160" class="cell">2026-07-15</text>
     <text x="438" y="160" class="cell">Aktif</text>
-    <text x="508" y="160" class="cell">Tumpang tindih</text>
+    <text x="508" y="160" class="cell">Bentrok deadline</text>
     <line x1="30" y1="169" x2="680" y2="169" stroke="#eef0f2"/>
     <!-- r3 -->
     <text x="38"  y="188" class="cell">Bayar vendor</text>

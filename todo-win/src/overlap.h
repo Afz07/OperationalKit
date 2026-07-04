@@ -1,22 +1,42 @@
-/* overlap.h — deteksi tumpang tindih jadwal & tugas terlewat.
+/* overlap.h — deteksi tugas yang perlu di-follow-up berdasarkan deadline.
+ *
+ * Ganti model lama (menandai setiap rentang tanggal yang beririsan) yang jadi
+ * noise saat banyak tugas berjalan paralel. Kini penanda berbasis DEADLINE:
+ * mendesak karena deadline sendiri, atau deadline berdesakan dengan tugas lain.
+ *
  * Fungsi murni (tanpa I/O) sehingga mudah diuji secara native. */
 #ifndef OVERLAP_H
 #define OVERLAP_H
 
 #include "todo.h"
 
-/* Dua rentang [a1..a2] dan [b1..b2] (ISO YYYY-MM-DD) dianggap tumpang tindih
- * secara inklusif. Mengembalikan 1 jika beririsan, 0 jika tidak. */
-int intervals_overlap(const char *a1, const char *a2,
-                      const char *b1, const char *b2);
+#define FOLLOWUP_DAYS 3 /* ambang default "Segera" & "berdesakan" (hari) */
 
-/* Apakah tugas t (yang belum tentu ada di list) bentrok dengan tugas AKTIF
- * lain di list. Tugas selesai (done!=0) diabaikan. exclude_id dilewati agar
- * sebuah tugas tidak dibandingkan dengan dirinya sendiri (pakai -1 bila t
- * belum tersimpan). t sendiri juga harus aktif agar dihitung bentrok. */
-int todo_has_conflict(const Todo *t, const Todo *list, int n, long long exclude_id);
+/* Status follow-up; nilai lebih besar = lebih mendesak (dipakai untuk urut). */
+typedef enum {
+    FU_NONE    = 0, /* aktif, belum perlu perhatian */
+    FU_CLASH   = 1, /* deadline berdesakan dengan tugas aktif lain */
+    FU_SOON    = 2, /* jatuh tempo dalam <= threshold hari */
+    FU_TODAY   = 3, /* jatuh tempo hari ini */
+    FU_OVERDUE = 4  /* sudah terlewat */
+} FollowupStatus;
 
-/* Tugas terlewat: masih aktif dan deadline-nya sebelum `today` (ISO). */
+/* Ubah "YYYY-MM-DD" menjadi nomor hari (serial) agar selisih hari bisa dihitung.
+ * Mengembalikan 0 bila format tidak dikenali. */
+long date_serial(const char *iso);
+
+/* Tentukan status follow-up tugas t relatif terhadap `today` (ISO) dan daftar
+ * tugas lain. Tugas selesai -> FU_NONE. `threshold` = ambang hari (mis.
+ * FOLLOWUP_DAYS). Aturan (Gabungan): mendesak karena deadline sendiri
+ * (Terlewat/Hari ini/Segera) ATAU deadline berdesakan (<= threshold hari)
+ * dengan tugas aktif lain. */
+FollowupStatus todo_followup(const Todo *t, const Todo *list, int n,
+                             const char *today, int threshold);
+
+/* Label singkat untuk kolom Follow-up. */
+const char *followup_label(FollowupStatus s);
+
+/* Tetap disediakan: tugas terlewat (aktif & deadline < today). */
 int todo_is_overdue(const Todo *t, const char *today);
 
 #endif /* OVERLAP_H */

@@ -2,9 +2,10 @@
  *
  * Fitur:
  *  - Bilah input "sekaligus" di atas: judul + tanggal mulai + deadline + Tambah.
- *  - Daftar ListView: Judul | Mulai | Deadline | Status | Keterangan.
- *  - Deteksi tumpang tindih jadwal: peringatan saat input (non-blokir) dan
- *    penanda "Tumpang tindih" / "Terlewat" pada kolom Keterangan.
+ *  - Daftar ListView: Judul | Mulai | Deadline | Status | Follow-up.
+ *  - Deteksi follow-up berbasis deadline: daftar terurut prioritas dan penanda
+ *    "Terlewat" / "Hari ini" / "Segera" / "Bentrok deadline" pada kolom Follow-up;
+ *    peringatan saat input hanya untuk bentrok deadline (non-blokir).
  *  - Tandai Selesai, Edit (dialog), Hapus.
  *
  * Menyengaja memakai API ANSI (char/UTF-8) agar selaras dengan SQLite. */
@@ -78,7 +79,7 @@ static void setup_columns(void)
 {
     static const struct { const char *t; int w; } cols[] = {
         { "Judul", 220 }, { "Mulai", 90 }, { "Deadline", 90 },
-        { "Status", 70 }, { "Keterangan", 130 }
+        { "Status", 70 }, { "Follow-up", 140 }
     };
     int i;
     LVCOLUMNA col;
@@ -156,9 +157,23 @@ static void add_row(int row, const Todo *t, const char *status, const char *ket)
     ListView_SetItemText(g_hList, idx, 4, (char *)ket);
 }
 
+/* Satu baris siap-tampil beserta status follow-up-nya (untuk pengurutan). */
+typedef struct { Todo t; FollowupStatus fu; } Row;
+
+/* Urutkan: tugas aktif di atas (selesai di bawah); di antara aktif, yang lebih
+ * mendesak di atas (FU_OVERDUE dulu); tie-break deadline menaik. */
+static int cmp_row(const void *pa, const void *pb)
+{
+    const Row *a = (const Row *)pa, *b = (const Row *)pb;
+    if (a->t.done != b->t.done) return a->t.done - b->t.done;
+    if (!a->t.done && a->fu != b->fu) return (int)b->fu - (int)a->fu;
+    return strcmp(a->t.due_date, b->t.due_date);
+}
+
 static void refresh_list(void)
 {
     Todo *list = NULL;
+    Row *rows;
     int n, i;
     char today[DATE_LEN];
 
@@ -166,16 +181,21 @@ static void refresh_list(void)
     SendMessageA(g_hList, LVM_DELETEALLITEMS, 0, 0);
     n = db_list(&list);
     if (n < 0) return;
-    for (i = 0; i < n; i++) {
-        const char *status = list[i].done ? "Selesai" : "Aktif";
-        const char *ket = "";
-        if (!list[i].done) {
-            if (todo_has_conflict(&list[i], list, n, list[i].id))
-                ket = "Tumpang tindih";
-            else if (todo_is_overdue(&list[i], today))
-                ket = "Terlewat";
+
+    if (n > 0) {
+        rows = (Row *)malloc((size_t)n * sizeof(Row));
+        if (rows) {
+            for (i = 0; i < n; i++) {
+                rows[i].t = list[i];
+                rows[i].fu = todo_followup(&list[i], list, n, today, FOLLOWUP_DAYS);
+            }
+            qsort(rows, (size_t)n, sizeof(Row), cmp_row);
+            for (i = 0; i < n; i++) {
+                const char *status = rows[i].t.done ? "Selesai" : "Aktif";
+                add_row(i, &rows[i].t, status, followup_label(rows[i].fu));
+            }
+            free(rows);
         }
-        add_row(i, &list[i], status, ket);
     }
     free(list);
 }
@@ -237,9 +257,10 @@ static INT_PTR CALLBACK EditDlgProc(HWND dlg, UINT msg, WPARAM wp, LPARAM lp)
 
 static void on_add(HWND hwnd)
 {
-    char title[TITLE_MAX], start[DATE_LEN], due[DATE_LEN];
+    char title[TITLE_MAX], start[DATE_LEN], due[DATE_LEN], today[DATE_LEN];
     Todo tmp, *list = NULL;
-    int n, conflict;
+    FollowupStatus fu;
+    int n;
 
     GetWindowTextA(g_hTitle, title, TITLE_MAX);
     if (title[0] == '\0') {
@@ -254,21 +275,23 @@ static void on_add(HWND hwnd)
         return;
     }
 
-    /* Cek tumpang tindih dengan tugas aktif lain (masalah #1). */
+    /* Peringatkan HANYA bila deadline tugas baru berdesakan dengan tugas aktif
+     * lain (bentrok deadline). Overlap rentang biasa tidak lagi memicu popup. */
+    today_iso(today);
     memset(&tmp, 0, sizeof tmp);
     tmp.id = -1;
     tmp.done = 0;
     strcpy(tmp.start_date, start);
     strcpy(tmp.due_date, due);
     n = db_list(&list);
-    conflict = (n > 0) ? todo_has_conflict(&tmp, list, n, -1) : 0;
+    fu = (n > 0) ? todo_followup(&tmp, list, n, today, FOLLOWUP_DAYS) : FU_NONE;
     free(list);
 
-    if (conflict) {
+    if (fu == FU_CLASH) {
         int r = MessageBoxA(hwnd,
-            "Jadwal tugas ini tumpang tindih dengan tugas aktif lain.\n"
-            "Tetap tambahkan?",
-            "Peringatan tumpang tindih", MB_YESNO | MB_ICONWARNING);
+            "Deadline tugas ini berdekatan dengan tugas aktif lain "
+            "(≤ 3 hari).\nTetap tambahkan?",
+            "Bentrok deadline", MB_YESNO | MB_ICONWARNING);
         if (r == IDNO) return;
     }
 
