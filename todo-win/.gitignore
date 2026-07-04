@@ -1,0 +1,6 @@
+# Artefak build (dihasilkan ulang via Makefile)
+todo.exe
+test_logic
+*.o
+*.res.o
+*.db

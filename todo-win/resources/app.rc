@@ -1,0 +1,24 @@
+#include <windows.h>
+#include <commctrl.h>
+#include "resource.h"
+
+/* Manifest agar Common Controls v6 aktif (tampilan modern & serius). */
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "app.manifest"
+
+/* Dialog Edit — judul + tanggal mulai + deadline. */
+IDD_EDIT DIALOGEX 0, 0, 250, 96
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Tugas"
+FONT 9, "Segoe UI"
+BEGIN
+    LTEXT           "Judul:",    -1,          10, 12, 40, 10
+    EDITTEXT                     IDC_E_TITLE, 60, 10, 180, 13, ES_AUTOHSCROLL
+    LTEXT           "Mulai:",    -1,          10, 34, 40, 10
+    CONTROL         "",          IDC_E_START, "SysDateTimePick32",
+                    DTS_SHORTDATEFORMAT | WS_TABSTOP,          60, 32, 100, 14
+    LTEXT           "Deadline:", -1,          10, 54, 46, 10
+    CONTROL         "",          IDC_E_DUE,   "SysDateTimePick32",
+                    DTS_SHORTDATEFORMAT | WS_TABSTOP,          60, 52, 100, 14
+    DEFPUSHBUTTON   "Simpan",    IDOK,       130, 74, 52, 16
+    PUSHBUTTON      "Batal",     IDCANCEL,   188, 74, 52, 16
+END
